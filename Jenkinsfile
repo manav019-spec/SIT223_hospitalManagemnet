@@ -6,26 +6,26 @@ pipeline {
     }
     
     stages {
-        // ========== STAGE 1: CHECKOUT ==========
+        // Stage 1: Checkout
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/manav019-spec/SIT223_hospitalManagemnet.git'
             }
         }
         
-        // ========== STAGE 2: BUILD ==========
+        //  Stage 2: Build
         stage('Build') {
             parallel {
                 stage('Build Backend') {
                     steps {
-                        dir('backend') {
+                        dir('Backend') {  
                             bat 'npm install'
                         }
                     }
                 }
                 stage('Build Frontend') {
                     steps {
-                        dir('frontend') {
+                        dir('Frontend') { 
                             bat 'npm install'
                             bat 'set CI=false && npm run build'
                         }
@@ -34,185 +34,184 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'frontend/build/**/*', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'Frontend/build/**/*', allowEmptyArchive: true
                 }
             }
         }
         
-        // ========== STAGE 3: TEST ==========
+        // Stage 3: Test
         stage('Test') {
             steps {
-                dir('backend') {
+                dir('Backend') {
                     bat 'npm test -- --forceExit'
                 }
             }
             post {
                 always {
-                    junit testResults: 'backend/coverage/junit.xml', allowEmptyResults: true
+                    junit testResults: 'Backend/coverage/junit.xml', allowEmptyResults: true
+                    script {
+                        def status = currentBuild.result ?: 'SUCCESS'
+                        emailext(
+                            to: 'manavjain0078600786@gmail.com',
+                            subject: "Jenkins - Test Stage: ${status} - Build #${env.BUILD_NUMBER}",
+                            body: """
+                                <html><body>
+                                <h2>Test Stage Notification</h2>
+                                <p><b>Project:</b> ${env.JOB_NAME}</p>
+                                <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                                <p><b>Status:</b> ${status}</p>
+                                <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                                </body></html>
+                            """,
+                            mimeType: 'text/html',
+                            attachLog: true,
+                            compressLog: true
+                        )
+                    }
                 }
             }
         }
         
-        // ========== STAGE 4: CODE QUALITY (SonarCloud) ==========
+        // Stage 4: SonarCloud Analysis
         stage('SonarCloud Analysis') {
             steps {
                 echo '═══ SONARCLOUD CODE QUALITY ANALYSIS ═══'
-                dir('frontend') {
+                dir('Frontend') {   // ← Capital F
                     bat '''
-                        echo "Generating coverage report..."
-                        npx jest --coverage || echo "Coverage generated"
-                        
                         echo "Downloading SonarScanner..."
                         curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-windows.zip
                         unzip -o sonar-scanner.zip
-                        
+
                         echo "Running SonarCloud analysis..."
                         sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat ^
-                          -Dsonar.projectKey=manav019-spec_mahavir-mediscope ^
+                          -Dsonar.projectKey=manav019-spec_SIT223_hospitalManagemnet2 ^
                           -Dsonar.organization=manav019-spec ^
                           -Dsonar.host.url=https://sonarcloud.io ^
+                          -Dsonar.token=%SONAR_TOKEN% ^
                           -Dsonar.sources=src ^
-                          -Dsonar.exclusions=**/node_modules/**,**/build/** ^
-                          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                          -Dsonar.exclusions=**/node_modules/**,**/build/**
                     '''
                 }
-                echo '✅ SonarCloud analysis triggered. View report at: https://sonarcloud.io/project/overview?id=manav019-spec_mahavir-mediscope'
+                echo 'SonarCloud analysis complete'
             }
         }
         
-        // ========== STAGE 5: SECURITY SCAN ==========
+        // Stage 5: Security Scan
         stage('Security Scan') {
             steps {
                 echo '═══ NPM AUDIT SECURITY SCAN ═══'
-                dir('backend') {
+                dir('Backend') {   // ← Capital B
                     bat 'npm audit --json > backend-audit.json || echo "Vulnerabilities found"'
                 }
-                dir('frontend') {
+                dir('Frontend') {  // ← Capital F
                     bat 'npm audit --json > frontend-audit.json || echo "Vulnerabilities found"'
                 }
-                echo ''
-                echo '📋 SECURITY VULNERABILITIES FOUND:'
-                echo '┌─────────────────────────────────────────────────────────────────────┐'
-                echo '│ 1. React Router XSS (HIGH)                                         │'
-                echo '│    - Package: react-router-dom <=6.30.2                            │'
-                echo '│    - Issue: Open redirect vulnerability leading to XSS             │'
-                echo '│    - Severity: HIGH                                                │'
-                echo '│    - Fix: Update to react-router-dom@6.30.3+                       │'
-                echo '├─────────────────────────────────────────────────────────────────────┤'
-                echo '│ 2. lodash Prototype Pollution (HIGH)                               │'
-                echo '│    - Package: lodash <=4.17.23                                     │'
-                echo '│    - Issue: Prototype pollution via _.set function                 │'
-                echo '│    - Severity: HIGH                                                │'
-                echo '│    - Fix: Update to lodash@4.17.24+                                │'
-                echo '├─────────────────────────────────────────────────────────────────────┤'
-                echo '│ 3. follow-redirects (MODERATE)                                     │'
-                echo '│    - Package: follow-redirects <=1.15.11                           │'
-                echo '│    - Issue: Leaks custom authentication headers                    │'
-                echo '│    - Severity: MODERATE                                            │'
-                echo '│    - Fix: Update to follow-redirects@1.15.12+                      │'
-                echo '├─────────────────────────────────────────────────────────────────────┤'
-                echo '│ 4. node-forge (HIGH)                                               │'
-                echo '│    - Package: node-forge <=1.3.3                                   │'
-                echo '│    - Issue: Signature forgery vulnerability                        │'
-                echo '│    - Severity: HIGH                                                │'
-                echo '│    - Fix: Update to node-forge@1.3.4+                              │'
-                echo '└─────────────────────────────────────────────────────────────────────┘'
-                echo ''
-                echo '✅ Security scan completed. Vulnerabilities documented for remediation.'
+                echo 'Security scan completed'
+            }
+            post {
+                always {
+                    script {
+                        def status = currentBuild.result ?: 'SUCCESS'
+                        emailext(
+                            to: 'manavjain0078600786@gmail.com',
+                            subject: "Jenkins - Security Scan: ${status} - Build #${env.BUILD_NUMBER}",
+                            body: """
+                                <html><body>
+                                <h2>Security Scan Notification</h2>
+                                <p><b>Project:</b> ${env.JOB_NAME}</p>
+                                <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                                <p><b>Status:</b> ${status}</p>
+                                <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                                </body></html>
+                            """,
+                            mimeType: 'text/html',
+                            attachLog: true,
+                            compressLog: true
+                        )
+                    }
+                }
             }
         }
         
-        // ========== STAGE 6: DEPLOY ==========
+        // Stage 6: Deploy to Docker
         stage('Deploy to Docker') {
             steps {
                 echo '═══ DEPLOYING TO DOCKER CONTAINERS ═══'
                 bat 'docker-compose down || echo "No containers running"'
                 bat 'docker-compose up -d --build'
                 bat 'timeout /t 15 /nobreak'
-                echo '✅ Deployment complete - Application running at http://localhost'
+                echo 'Deployment complete'
             }
         }
         
-        // ========== STAGE 7: RELEASE ==========
+        // Stage 7: Release
         stage('Release') {
             steps {
                 echo '═══ CREATING RELEASE ═══'
                 script {
                     def version = new Date().format('yyyyMMdd-HHmmss')
                     echo "Creating release: mahavir-mediscope-${version}"
-                    bat "git tag release-${version} || echo 'Tag created'"
-                    bat "git push origin release-${version} || echo 'Push skipped'"
+                    bat "git tag release-${version} || echo Tag created"
+                    bat "git push origin release-${version} || echo Push skipped"
                 }
-                echo '✅ Release created with version tag'
+                echo 'Release created'
             }
         }
         
-        // ========== STAGE 8: MONITORING ==========
+        // Stage 8: Monitoring & Alerting
         stage('Monitoring & Alerting') {
             steps {
                 echo '═══ MONITORING DASHBOARDS ═══'
                 bat 'docker-compose -f docker-compose.monitoring.yml up -d || echo "Monitoring already running"'
-                
                 script {
-                    def health = bat(script: 'curl -s http://localhost:5000/health', returnStdout: true).trim()
+                    def health = bat(
+                        script: 'curl -s http://localhost:5000/health',
+                        returnStdout: true
+                    ).trim()
                     echo "Health Check: ${health}"
-                    
-                    echo ''
-                    echo '📊 MONITORING ENDPOINTS:'
-                    echo '  - Prometheus: http://localhost:9090'
-                    echo '  - Grafana: http://localhost:3000 (admin/admin)'
-                    echo '  - Health API: http://localhost:5000/health'
-                    echo '  - Metrics API: http://localhost:5000/metrics'
-                    echo ''
-                    echo '🚨 ALERT RULES ACTIVE:'
-                    echo '  - Backend Down Alert (critical)'
-                    echo '  - High Response Time Alert (warning)'
+                    echo 'Prometheus: http://localhost:9090'
+                    echo 'Grafana: http://localhost:3000 (admin/admin)'
                 }
-                echo '✅ Monitoring & Alerting configured'
+                echo 'Monitoring configured'
             }
         }
     }
     
     post {
         success {
-            echo ''
-            echo '═══════════════════════════════════════════════════════════════════'
-            echo '🎉🎉🎉 PIPELINE COMPLETED - ALL 8 STAGES PASSED! 🎉🎉🎉'
-            echo '═══════════════════════════════════════════════════════════════════'
-            echo ''
-            echo 'STAGE SUMMARY:'
-            echo '  ✅ 1. Checkout'
-            echo '  ✅ 2. Build (npm install + react build)'
-            echo '  ✅ 3. Test (Jest - 2/2 tests passing)'
-            echo '  ✅ 4. Code Quality (SonarCloud)'
-            echo '  ✅ 5. Security (npm audit with vulnerability report)'
-            echo '  ✅ 6. Deploy (Docker Compose)'
-            echo '  ✅ 7. Release (Git tag)'
-            echo '  ✅ 8. Monitoring (Prometheus + Grafana)'
-            echo ''
-            echo '📧 Email notification sent to developers'
-            
-            // Email notification
+            echo 'ALL 8 STAGES PASSED!'
             emailext(
-                subject: "SUCCESS: Mahavir Mediscope Pipeline - Build ${env.BUILD_NUMBER}",
+                subject: "SUCCESS: Mahavir Mediscope - Build #${env.BUILD_NUMBER}",
                 body: """
-                    <h2>✅ Pipeline Completed Successfully!</h2>
-                    <p><strong>Project:</strong> Mahavir Mediscope Eye Centre</p>
-                    <p><strong>Build Number:</strong> ${env.BUILD_NUMBER}</p>
-                    <p><strong>All stages passed:</strong> Build, Test, Code Quality, Security, Deploy, Release, Monitoring</p>
-                    <p><strong>Application URL:</strong> http://localhost</p>
-                    <p><strong>SonarCloud Report:</strong> https://sonarcloud.io/project/overview?id=manav019-spec_mahavir-mediscope</p>
+                    <html><body>
+                    <h2>Pipeline Completed Successfully!</h2>
+                    <p><b>Project:</b> Mahavir Mediscope Eye Centre</p>
+                    <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                    <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                    <p><b>SonarCloud:</b> <a href="https://sonarcloud.io/project/overview?id=manav019-spec_SIT223_hospitalManagemnet2">View Report</a></p>
+                    </body></html>
                 """,
-                to: "manavjain0078600786@gmail.com"
+                mimeType: 'text/html',
+                to: 'manavjain0078600786@gmail.com',
+                attachLog: true
             )
         }
         failure {
             emailext(
-                subject: "FAILED: Mahavir Mediscope Pipeline - Build ${env.BUILD_NUMBER}",
-                body: "Pipeline failed. Check Jenkins console for details.",
-                to: "manavjain0078600786@gmail.com"
+                subject: "FAILED: Mahavir Mediscope - Build #${env.BUILD_NUMBER}",
+                body: """
+                    <html><body>
+                    <h2>Pipeline Failed</h2>
+                    <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                    <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                    <p>Check attached log for details.</p>
+                    </body></html>
+                """,
+                mimeType: 'text/html',
+                to: 'manavjain0078600786@gmail.com',
+                attachLog: true
             )
-            echo '❌ Pipeline failed - check logs above'
+            echo 'Pipeline failed'
         }
     }
 }
