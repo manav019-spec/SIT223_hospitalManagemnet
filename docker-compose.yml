@@ -6,7 +6,7 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - app-network
+      - monitoring
 
   frontend:
     build: ./frontend
@@ -15,8 +15,26 @@ services:
     depends_on:
       - backend
     networks:
-      - app-network
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - monitoring
 
 networks:
-  app-network:
+  monitoring:
     driver: bridge
