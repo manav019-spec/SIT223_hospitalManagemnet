@@ -51,8 +51,8 @@ pipeline {
                     steps {
                         dir('frontend') {
                             // Ignore build warnings/errors to allow pipeline to continue
-                            bat '''
-                                set CI=false
+                            powershell '''
+                                $env:CI = "false"
                                 npm run build
                             '''
                         }
