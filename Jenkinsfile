@@ -102,13 +102,13 @@ pipeline {
         stage('Security Scan') {
             steps {
                 echo '═══ NPM AUDIT SECURITY SCAN ═══'
-                dir('Backend') {   
-                    bat 'npm audit --json > backend-audit.json || echo "Vulnerabilities found"'
+                dir('Backend') {
+                    bat 'npm audit --json > backend-audit.json || exit 0'
                 }
-                dir('Frontend') {  
-                    bat 'npm audit --json > frontend-audit.json || echo "Vulnerabilities found"'
+                dir('Frontend') {
+                    bat 'npm audit --json > frontend-audit.json || exit 0'
                 }
-                echo 'Security scan completed'
+                echo 'Security scan completed - check audit JSON files for details'
             }
             post {
                 always {
