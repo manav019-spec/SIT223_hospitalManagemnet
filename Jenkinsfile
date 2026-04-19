@@ -6,134 +6,134 @@ pipeline {
     }
     
     stages {
-        // // Stage 1: Checkout
-        // stage('Checkout') {
-        //     steps {
-        //         git branch: 'main', url: 'https://github.com/manav019-spec/SIT223_hospitalManagemnet.git'
-        //     }
-        // }
+        // Stage 1: Checkout
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/manav019-spec/SIT223_hospitalManagemnet.git'
+            }
+        }
         
-        // //  Stage 2: Build
-        // stage('Build') {
-        //     parallel {
-        //         stage('Build Backend') {
-        //             steps {
-        //                 dir('Backend') {  
-        //                     bat 'npm install'
-        //                 }
-        //             }
-        //         }
-        //         stage('Build Frontend') {
-        //             steps {
-        //                 dir('Frontend') { 
-        //                     bat 'npm install'
-        //                     bat 'set CI=false && npm run build'
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             archiveArtifacts artifacts: 'Frontend/build/**/*', allowEmptyArchive: true
-        //         }
-        //     }
-        // }
+        //  Stage 2: Build
+        stage('Build') {
+            parallel {
+                stage('Build Backend') {
+                    steps {
+                        dir('Backend') {  
+                            bat 'npm install'
+                        }
+                    }
+                }
+                stage('Build Frontend') {
+                    steps {
+                        dir('Frontend') { 
+                            bat 'npm install'
+                            bat 'set CI=false && npm run build'
+                        }
+                    }
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'Frontend/build/**/*', allowEmptyArchive: true
+                }
+            }
+        }
         
-        // // Stage 3: Test
-        // stage('Test') {
-        //     steps {
-        //         dir('Backend') {
-        //             bat 'npm test -- --forceExit'
-        //         }
-        //     }
-        //     post {
-        //         always {
-        //             junit testResults: 'Backend/coverage/junit.xml', allowEmptyResults: true
-        //             script {
-        //                 def status = currentBuild.result ?: 'SUCCESS'
-        //                 emailext(
-        //                     to: 'manavjain0078600786@gmail.com',
-        //                     subject: "Jenkins - Test Stage: ${status} - Build #${env.BUILD_NUMBER}",
-        //                     body: """
-        //                         <html><body>
-        //                         <h2>Test Stage Notification</h2>
-        //                         <p><b>Project:</b> ${env.JOB_NAME}</p>
-        //                         <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
-        //                         <p><b>Status:</b> ${status}</p>
-        //                         <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
-        //                         </body></html>
-        //                     """,
-        //                     mimeType: 'text/html',
-        //                     attachLog: true,
-        //                     compressLog: true
-        //                 )
-        //             }
-        //         }
-        //     }
-        // }
+        // Stage 3: Test
+        stage('Test') {
+            steps {
+                dir('Backend') {
+                    bat 'npm test -- --forceExit'
+                }
+            }
+            post {
+                always {
+                    junit testResults: 'Backend/coverage/junit.xml', allowEmptyResults: true
+                    script {
+                        def status = currentBuild.result ?: 'SUCCESS'
+                        emailext(
+                            to: 'manavjain0078600786@gmail.com',
+                            subject: "Jenkins - Test Stage: ${status} - Build #${env.BUILD_NUMBER}",
+                            body: """
+                                <html><body>
+                                <h2>Test Stage Notification</h2>
+                                <p><b>Project:</b> ${env.JOB_NAME}</p>
+                                <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                                <p><b>Status:</b> ${status}</p>
+                                <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                                </body></html>
+                            """,
+                            mimeType: 'text/html',
+                            attachLog: true,
+                            compressLog: true
+                        )
+                    }
+                }
+            }
+        }
         
-        // // Stage 4: SonarCloud Analysis
-        // stage('SonarCloud Analysis') {
-        //         steps {
-        //             echo '═══ SONARCLOUD CODE QUALITY ANALYSIS ═══'
-        //             dir('Frontend') {
-        //                 bat '''
-        //                 echo "Downloading SonarScanner..."
-        //                 curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-windows.zip
+        // Stage 4: SonarCloud Analysis
+        stage('SonarCloud Analysis') {
+                steps {
+                    echo '═══ SONARCLOUD CODE QUALITY ANALYSIS ═══'
+                    dir('Frontend') {
+                        bat '''
+                        echo "Downloading SonarScanner..."
+                        curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-windows.zip
         
-        //                 echo "Extracting SonarScanner..."
-        //                 powershell -Command "Expand-Archive -Path sonar-scanner.zip -DestinationPath . -Force"
+                        echo "Extracting SonarScanner..."
+                        powershell -Command "Expand-Archive -Path sonar-scanner.zip -DestinationPath . -Force"
         
-        //                 echo "Running SonarCloud analysis..."
-        //                 sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat ^
-        //                   -Dsonar.projectKey=manav019-spec_SIT223_hospitalManagemnet2 ^
-        //                   -Dsonar.organization=manav019-spec ^
-        //                   -Dsonar.host.url=https://sonarcloud.io ^
-        //                   -Dsonar.token=%SONAR_TOKEN% ^
-        //                   -Dsonar.sources=src ^
-        //                   -Dsonar.exclusions=**/node_modules/**,**/build/**
-        //             '''
-        //         }
-        //         echo 'SonarCloud analysis complete'
-        //     }
-        // }
+                        echo "Running SonarCloud analysis..."
+                        sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat ^
+                          -Dsonar.projectKey=manav019-spec_SIT223_hospitalManagemnet2 ^
+                          -Dsonar.organization=manav019-spec ^
+                          -Dsonar.host.url=https://sonarcloud.io ^
+                          -Dsonar.token=%SONAR_TOKEN% ^
+                          -Dsonar.sources=src ^
+                          -Dsonar.exclusions=**/node_modules/**,**/build/**
+                    '''
+                }
+                echo 'SonarCloud analysis complete'
+            }
+        }
         
-        // // Stage 5: Security Scan
-        // stage('Security Scan') {
-        //     steps {
-        //         echo '═══ NPM AUDIT SECURITY SCAN ═══'
-        //         dir('Backend') {
-        //             bat 'npm audit --json > backend-audit.json || exit 0'
-        //         }
-        //         dir('Frontend') {
-        //             bat 'npm audit --json > frontend-audit.json || exit 0'
-        //         }
-        //         echo 'Security scan completed - check audit JSON files for details'
-        //     }
-        //     post {
-        //         always {
-        //             script {
-        //                 def status = currentBuild.result ?: 'SUCCESS'
-        //                 emailext(
-        //                     to: 'manavjain0078600786@gmail.com',
-        //                     subject: "Jenkins - Security Scan: ${status} - Build #${env.BUILD_NUMBER}",
-        //                     body: """
-        //                         <html><body>
-        //                         <h2>Security Scan Notification</h2>
-        //                         <p><b>Project:</b> ${env.JOB_NAME}</p>
-        //                         <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
-        //                         <p><b>Status:</b> ${status}</p>
-        //                         <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
-        //                         </body></html>
-        //                     """,
-        //                     mimeType: 'text/html',
-        //                     attachLog: true,
-        //                     compressLog: true
-        //                 )
-        //             }
-        //         }
-        //     }
-        // }
+        // Stage 5: Security Scan
+        stage('Security Scan') {
+            steps {
+                echo '═══ NPM AUDIT SECURITY SCAN ═══'
+                dir('Backend') {
+                    bat 'npm audit --json > backend-audit.json || exit 0'
+                }
+                dir('Frontend') {
+                    bat 'npm audit --json > frontend-audit.json || exit 0'
+                }
+                echo 'Security scan completed - check audit JSON files for details'
+            }
+            post {
+                always {
+                    script {
+                        def status = currentBuild.result ?: 'SUCCESS'
+                        emailext(
+                            to: 'manavjain0078600786@gmail.com',
+                            subject: "Jenkins - Security Scan: ${status} - Build #${env.BUILD_NUMBER}",
+                            body: """
+                                <html><body>
+                                <h2>Security Scan Notification</h2>
+                                <p><b>Project:</b> ${env.JOB_NAME}</p>
+                                <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                                <p><b>Status:</b> ${status}</p>
+                                <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                                </body></html>
+                            """,
+                            mimeType: 'text/html',
+                            attachLog: true,
+                            compressLog: true
+                        )
+                    }
+                }
+            }
+        }
         
         // Stage 6: Deploy to Docker
         stage('Deploy to Docker') {
@@ -141,7 +141,7 @@ pipeline {
                 echo '═══ DEPLOYING TO DOCKER CONTAINERS ═══'
                 bat 'docker-compose down || echo "No containers running"'
                 bat 'docker-compose up -d --build'
-                bat 'timeout /t 15 /nobreak'
+                bat 'ping -n 16 127.0.0.1 > nul' // Wait for 15 seconds to allow containers to start    
                 echo 'Deployment complete'
             }
         }
