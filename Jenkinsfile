@@ -9,13 +9,11 @@ pipeline {
         // Stage 1: Checkout
         stage('Checkout') {
             steps {
-                git branch: 'main', 
-                    url: 'https://github.com/manav019-spec/SIT223_hospitalManagemnet.git', 
-                    credentialsId: 'git-init'
+                git branch: 'main', url: 'https://github.com/manav019-spec/SIT223_hospitalManagemnet.git', credentialsId: 'git-init'
             }
         }
         
-        // Stage 2: Build
+        //  Stage 2: Build
         stage('Build') {
             parallel {
                 stage('Build Backend') {
@@ -39,8 +37,10 @@ pipeline {
                     echo 'Creating Docker images as artifacts...'
                     bat 'docker build -t healthcare-backend:latest ./Backend'
                     bat 'docker build -t healthcare-frontend:latest ./Frontend'
+
                     bat 'docker save healthcare-backend:latest -o backend.tar'
                     bat 'docker save healthcare-frontend:latest -o frontend.tar'
+
                     archiveArtifacts artifacts: '*.tar', allowEmptyArchive: true
                 }
             }
@@ -79,10 +79,10 @@ pipeline {
             }
         }
 
-        // Stage 4: Code Quality
+        // Stage 4: Code Quality (Linting)
         stage('Code Quality') {
             steps {
-                echo '═══ CODE QUALITY CHECK ═══'
+                echo '═══ CODE QUALITY CHECK (LINT) ═══'
                 dir('Backend') {
                     bat 'npm run lint || echo "No lint issues"'
                 }
@@ -91,20 +91,20 @@ pipeline {
                 }
                 echo 'Code quality checks completed'
             }
-        }
+        } 
 
-        // Stage 5: SonarCloud Analysis
+        // Additional Stage: SonarCloud Analysis
         stage('SonarCloud Analysis') {
-            steps {
-                echo '═══ SONARCLOUD CODE QUALITY ANALYSIS ═══'
-                dir('Frontend') {
-                    bat '''
+                steps {
+                    echo '═══ SONARCLOUD CODE QUALITY ANALYSIS ═══'
+                    dir('Frontend') {
+                        bat '''
                         echo "Downloading SonarScanner..."
                         curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-windows.zip
-
+        
                         echo "Extracting SonarScanner..."
                         powershell -Command "Expand-Archive -Path sonar-scanner.zip -DestinationPath . -Force"
-
+        
                         echo "Running SonarCloud analysis..."
                         sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat ^
                           -Dsonar.projectKey=manav019-spec_SIT223_hospitalManagemnet2 ^
@@ -119,7 +119,7 @@ pipeline {
             }
         }
         
-        // Stage 6: Security Scan
+        // Stage 5: Security Scan
         stage('Security Scan') {
             steps {
                 echo '═══ NPM AUDIT SECURITY SCAN ═══'
@@ -129,7 +129,7 @@ pipeline {
                 dir('Frontend') {
                     bat 'npm audit --json > frontend-audit.json || exit 0'
                 }
-                echo 'Security scan completed'
+                echo 'Security scan completed - check audit JSON files for details'
             }
             post {
                 always {
@@ -156,28 +156,27 @@ pipeline {
             }
         }
         
-        // Stage 7: Deploy to Docker
+        // Stage 6: Deploy to Docker
         stage('Deploy to Docker') {
             steps {
                 echo '═══ DEPLOYING TO DOCKER CONTAINERS ═══'
                 bat 'docker-compose down || echo "No containers running"'
                 bat 'docker-compose up -d --build'
-                bat 'ping -n 16 127.0.0.1 > nul'
+                bat 'ping -n 16 127.0.0.1 > nul' // Wait for 15 seconds to allow containers to start    
                 echo 'Deployment complete'
             }
         }
 
-        // Stage 8: Verify Deployment
+        // Additional Stage: Verify Deployment
         stage('Verify Deployment') {
             steps {
                 echo '═══ VERIFYING DEPLOYMENT ═══'
-                // Simple curl check instead of PowerShell
                 bat 'curl -f http://localhost:5000/health || echo "Health check done"'
                 echo 'Deployment verified successfully'
             }
         }
         
-        // Stage 9: Release
+        // Stage 7: Release
         stage('Release') {
             steps {
                 echo '═══ CREATING RELEASE ═══'
@@ -204,7 +203,7 @@ pipeline {
             }
         }
         
-        // Stage 10: Monitoring & Alerting
+        // Stage 8: Monitoring & Alerting
         stage('Monitoring & Alerting') {
             steps {
                 echo '═══ MONITORING DASHBOARDS ═══'
@@ -225,7 +224,7 @@ pipeline {
     
     post {
         success {
-            echo 'ALL STAGES PASSED!'
+            echo 'ALL 8 STAGES PASSED!'
             emailext(
                 subject: "SUCCESS: Mahavir Mediscope - Build #${env.BUILD_NUMBER}",
                 body: """
