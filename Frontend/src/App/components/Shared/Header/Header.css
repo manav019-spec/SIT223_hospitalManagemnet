@@ -1,0 +1,92 @@
+.head-icon {
+  font-family: cursive;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff !important;
+  margin-right: 2rem;
+}
+
+.head-icon:hover {
+  color: #f0b90b !important;
+}
+
+.navbar-nav .nav-link {
+  color: #ddd !important;
+  transition: color 0.3s ease;
+  font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #4a4a76 !important;
+  text-decoration: underline;
+}
+
+.signup-btn,
+.doctor-btn {
+  border: 1px solid #f0b90b;
+  border-radius: 6px;
+  color: #f0b90b !important;
+  font-weight: 600;
+  padding: 6px 16px;
+  transition: all 0.3s ease;
+}
+
+.signup-btn:hover,
+.doctor-btn:hover {
+  background-color: #f0b90b;
+  color: #000 !important;
+}
+
+.navbar {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1030;
+}
+
+.navbar-nav {
+  align-items: center;
+}
+
+/* Fix dropdown visibility */
+.navbar-collapse {
+  z-index: 1031;
+}
+
+.dropdown-menu {
+  z-index: 1032 !important;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: rgb(203, 32, 32);
+}
+
+/* Ensure dropdown is visible on all screens */
+@media (max-width: 991.98px) {
+  .navbar-nav .dropdown-menu {
+    position: static;
+    float: none;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+  
+  .dropdown-item {
+    color: black !important;
+    padding: 10px 15px;
+  }
+  
+  .dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #4a4a76 !important;
+  }
+}

@@ -1,0 +1,204 @@
+/* DoctorLogin.css */
+.doctor-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.doctor-login-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 900px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.doctor-login-form {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 2rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 600;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.checkbox {
+  margin-right: 8px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.login-button:hover:not(:disabled) {
+  background: #5a6fd8;
+}
+
+.login-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.login-links {
+  display: flex;
+  justify-content: space-between;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+.link-button:hover {
+  color: #5a6fd8;
+}
+
+.login-image-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: #f8f9fa;
+}
+
+.login-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #fcc;
+}
+
+.success-message {
+  background: #efe;
+  color: #363;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #cfc;
+}
+
+.forgot-password-section {
+  text-align: center;
+}
+
+.forgot-password-section h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.forgot-password-section p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.forgot-password-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reset-button {
+  padding: 12px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.reset-button:hover:not(:disabled) {
+  background: #218838;
+}
+
+.back-button {
+  padding: 12px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.back-button:hover {
+  background: #5a6268;
+}
+
+@media (max-width: 768px) {
+  .doctor-login-card {
+    grid-template-columns: 1fr;
+  }
+  
+  .login-image-section {
+    display: none;
+  }
+}

@@ -1,0 +1,24 @@
+.footer-all {
+
+    background-color: rgb(16, 12, 48);
+    color: gray;
+    align-items: center;
+    width: 100%;
+
+
+}
+
+.footer {
+    font-size: 15px;
+    text-align: center;
+}
+
+.url {
+    text-decoration: none;
+    color: gray;
+}
+
+footer {
+    text-align: center;
+    margin-top: 10px;
+}

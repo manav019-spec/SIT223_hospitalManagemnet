@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS to replace Bootstrap classes */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+}
+
+.col-md-4, .col-md-6, .col-md-12 {
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.col-md-4 {
+  width: 33.333%;
+}
+
+.col-md-6 {
+  width: 50%;
+}
+
+.col-md-12 {
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+.rounded-3 {
+  border-radius: 12px;
+}
