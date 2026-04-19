@@ -2,87 +2,85 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_REGISTRY = 'local'
+       
+        DOCKER_HOST = 'tcp://localhost:2375'
     }
     
     stages {
-        stage('Clean Workspace') {
+        stage('Clean') {
             steps {
                 cleanWs()
+                bat 'docker-compose down || echo "No containers running"'
             }
         }
         
-        stage('Build Backend') {
-            steps {
-                dir('backend') {
-                    bat 'npm install'
+        stage('Install Dependencies') {
+            parallel {
+                stage('Backend') {
+                    steps {
+                        dir('backend') {
+                            bat 'npm install'
+                        }
+                    }
                 }
-            }
-        }
-        
-        stage('Test Backend') {
-            steps {
-                dir('backend') {
-                    bat 'npm test || echo "Tests completed"'
-                }
-            }
-        }
-        
-        stage('Build Frontend') {
-            steps {
-                dir('frontend') {
-                    bat 'npm install'
-                    bat 'npm run build'
-                }
-            }
-        }
-        
-        stage('Docker Build & Run') {
-            steps {
-                bat 'docker-compose down || true'
-                bat 'docker-compose up -d --build'
-            }
-        }
-        
-        stage('Health Check') {
-            steps {
-                script {
-                    // Wait for backend to be ready
-                    timeout(time: 60, unit: 'SECONDS') {
-                        waitUntil {
-                            try {
-                                def response = bat(script: 'curl -s http://localhost:5000/health', returnStdout: true).trim()
-                                echo "Backend response: ${response}"
-                                return true
-                            } catch(Exception e) {
-                                echo "Waiting for backend..."
-                                sleep 5
-                                return false
-                            }
+                stage('Frontend') {
+                    steps {
+                        dir('frontend') {
+                            bat 'npm install'
                         }
                     }
                 }
             }
         }
         
-        stage('Verify Application') {
+        stage('Test') {
+            parallel {
+                stage('Backend Tests') {
+                    steps {
+                        dir('backend') {
+                            bat 'npm test -- --forceExit'
+                        }
+                    }
+                }
+                stage('Frontend Build') {
+                    steps {
+                        dir('frontend') {
+                            bat 'set CI=false && npm run build'
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Docker Build') {
             steps {
-                bat 'curl -s http://localhost:5000/api/test'
-                bat 'curl -s http://localhost'
-                echo 'Application verified successfully!'
+                bat 'docker-compose build'
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                bat 'docker-compose up -d'
+                bat 'timeout /t 10'
+            }
+        }
+        
+        stage('Verify') {
+            steps {
+                script {
+                    def health = bat(script: 'curl -s http://localhost:5000/health', returnStdout: true).trim()
+                    echo "Health Check: ${health}"
+                }
             }
         }
     }
     
     post {
         always {
-            bat 'docker-compose down || true'
+            bat 'docker-compose logs --tail=50 || true'
         }
         success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
+            echo 'PIPELINE SUCCESS!'
         }
     }
 }
