@@ -76,34 +76,35 @@ pipeline {
         stage('SonarCloud Analysis') {
             steps {
                 echo '═══ SONARCLOUD CODE QUALITY ANALYSIS ═══'
-                dir('Frontend') {   // ← Capital F
+                dir('Frontend') {
                     bat '''
-                        echo "Downloading SonarScanner..."
-                        curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-windows.zip
-                        unzip -o sonar-scanner.zip
-
-                        echo "Running SonarCloud analysis..."
-                        sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat ^
-                          -Dsonar.projectKey=manav019-spec_SIT223_hospitalManagemnet2 ^
-                          -Dsonar.organization=manav019-spec ^
-                          -Dsonar.host.url=https://sonarcloud.io ^
-                          -Dsonar.token=%SONAR_TOKEN% ^
-                          -Dsonar.sources=src ^
-                          -Dsonar.exclusions=**/node_modules/**,**/build/**
-                    '''
-                }
-                echo 'SonarCloud analysis complete'
+                    echo "Downloading SonarScanner..."
+                    curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-windows.zip
+    
+                    echo "Extracting SonarScanner..."
+                    powershell -Command "Expand-Archive -Path sonar-scanner.zip -DestinationPath . -Force"
+    
+                    echo "Running SonarCloud analysis..."
+                    sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat ^
+                      -Dsonar.projectKey=manav019-spec_SIT223_hospitalManagemnet2 ^
+                      -Dsonar.organization=manav019-spec ^
+                      -Dsonar.host.url=https://sonarcloud.io ^
+                      -Dsonar.token=%SONAR_TOKEN% ^
+                      -Dsonar.sources=src ^
+                      -Dsonar.exclusions=**/node_modules/**,**/build/**
+                '''
             }
+            echo 'SonarCloud analysis complete'
         }
         
         // Stage 5: Security Scan
         stage('Security Scan') {
             steps {
                 echo '═══ NPM AUDIT SECURITY SCAN ═══'
-                dir('Backend') {   // ← Capital B
+                dir('Backend') {   
                     bat 'npm audit --json > backend-audit.json || echo "Vulnerabilities found"'
                 }
-                dir('Frontend') {  // ← Capital F
+                dir('Frontend') {  
                     bat 'npm audit --json > frontend-audit.json || echo "Vulnerabilities found"'
                 }
                 echo 'Security scan completed'
