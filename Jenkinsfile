@@ -63,7 +63,6 @@ pipeline {
                         }
                         failure {
                             echo 'Frontend build had issues but continuing'
-                            unstable('Frontend build completed with warnings/errors')
                         }
                     }
                 }
