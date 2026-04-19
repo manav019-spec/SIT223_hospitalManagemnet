@@ -31,7 +31,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
+    "build": "cross-env CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "fix": "eslint src --fix",
@@ -56,6 +56,7 @@
     ]
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "tailwindcss": "^3.3.2"
   }
 }

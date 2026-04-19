@@ -52,7 +52,7 @@ pipeline {
                         dir('frontend') {
                             // Ignore build warnings/errors to allow pipeline to continue
                             powershell '''
-                                $env:CI = "false"
+                                $env:CI ="false"
                                 npm run build
                             '''
                         }
