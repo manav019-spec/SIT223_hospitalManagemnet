@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_REGISTRY = 'manav019'
         // Get version from git commit hash
-        APP_VERSION = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        APP_VERSION = powershell(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     }
     
     stages {
