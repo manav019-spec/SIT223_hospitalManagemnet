@@ -1,9 +1,22 @@
-prometheus:
-    image: prom/prometheus:latest
+version: '3.8'
+
+services:
+  backend:
+    build: ./Backend
     ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./alerts.yml:/etc/prometheus/alerts.yml    # ← ADD THIS
+      - "5000:5000"
     networks:
-      - monitoring
+      - app-network
+
+  frontend:
+    build: ./Frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
