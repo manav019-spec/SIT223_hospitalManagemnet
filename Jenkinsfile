@@ -89,10 +89,10 @@ pipeline {
             steps {
                 echo 'Running security checks...'
                 dir('backend') {
-                    bat 'npm audit --production || echo "Run npm audit fix to fix issues"'
+                    bat 'npm audit --production || echo "Vulnerabilities found! But continuing pipeline."'
                 }
                 dir('frontend') {
-                    bat 'npm audit --production || echo "Run npm audit fix to fix issues"'
+                    bat 'npm audit --production || echo "Vulnerabilities found! But continuing pipeline."'
                 }
                 echo 'Security scan completed'
             }
