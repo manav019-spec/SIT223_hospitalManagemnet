@@ -4,13 +4,15 @@ groups:
       - alert: BackendDown
         expr: up{job="backend"} == 0
         for: 1m
+        labels:
+          severity: critical
         annotations:
           summary: "Backend service is down"
-          severity: "critical"
 
       - alert: HighResponseTime
         expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.5
         for: 2m
+        labels:
+          severity: warning      
         annotations:
           summary: "Response time above 500ms"
-          severity: "warning"

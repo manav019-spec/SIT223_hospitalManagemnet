@@ -203,14 +203,14 @@ pipeline {
                     <p><strong>Application URL:</strong> http://localhost</p>
                     <p><strong>SonarCloud Report:</strong> https://sonarcloud.io/project/overview?id=manav019-spec_mahavir-mediscope</p>
                 """,
-                to: "your-email@gmail.com"
+                to: "manavjain0078600786@gmail.com"
             )
         }
         failure {
             emailext(
                 subject: "FAILED: Mahavir Mediscope Pipeline - Build ${env.BUILD_NUMBER}",
                 body: "Pipeline failed. Check Jenkins console for details.",
-                to: "your-email@gmail.com"
+                to: "manavjain0078600786@gmail.com"
             )
             echo '❌ Pipeline failed - check logs above'
         }
