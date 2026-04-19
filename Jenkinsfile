@@ -74,27 +74,28 @@ pipeline {
         
         // Stage 4: SonarCloud Analysis
         stage('SonarCloud Analysis') {
-            steps {
-                echo '═══ SONARCLOUD CODE QUALITY ANALYSIS ═══'
-                dir('Frontend') {
-                    bat '''
-                    echo "Downloading SonarScanner..."
-                    curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-windows.zip
-    
-                    echo "Extracting SonarScanner..."
-                    powershell -Command "Expand-Archive -Path sonar-scanner.zip -DestinationPath . -Force"
-    
-                    echo "Running SonarCloud analysis..."
-                    sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat ^
-                      -Dsonar.projectKey=manav019-spec_SIT223_hospitalManagemnet2 ^
-                      -Dsonar.organization=manav019-spec ^
-                      -Dsonar.host.url=https://sonarcloud.io ^
-                      -Dsonar.token=%SONAR_TOKEN% ^
-                      -Dsonar.sources=src ^
-                      -Dsonar.exclusions=**/node_modules/**,**/build/**
-                '''
+                steps {
+                    echo '═══ SONARCLOUD CODE QUALITY ANALYSIS ═══'
+                    dir('Frontend') {
+                        bat '''
+                        echo "Downloading SonarScanner..."
+                        curl -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-windows.zip
+        
+                        echo "Extracting SonarScanner..."
+                        powershell -Command "Expand-Archive -Path sonar-scanner.zip -DestinationPath . -Force"
+        
+                        echo "Running SonarCloud analysis..."
+                        sonar-scanner-5.0.1.3006-windows\\bin\\sonar-scanner.bat ^
+                          -Dsonar.projectKey=manav019-spec_SIT223_hospitalManagemnet2 ^
+                          -Dsonar.organization=manav019-spec ^
+                          -Dsonar.host.url=https://sonarcloud.io ^
+                          -Dsonar.token=%SONAR_TOKEN% ^
+                          -Dsonar.sources=src ^
+                          -Dsonar.exclusions=**/node_modules/**,**/build/**
+                    '''
+                }
+                echo 'SonarCloud analysis complete'
             }
-            echo 'SonarCloud analysis complete'
         }
         
         // Stage 5: Security Scan
