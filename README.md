@@ -214,13 +214,12 @@ react-scripts	CRITICAL	Dev dependency	Acceptable
 ```
  ---
 ### Author
+- Manav Jain
 
-Manav Jain
-
-GitHub: https://github.com/manav019-spec
-Email: manav4830.se24@chitkara.edu.in
-University: Chitkara University
-Unit: SIT223 — Professional Practice in IT
+- GitHub: https://github.com/manav019-spec
+- Email: manav4830.se24@chitkara.edu.in
+- University: Chitkara University
+- Unit: SIT223 — Professional Practice in IT
 
 ### License
 This project is created for academic purposes as part of SIT223 at Deakin University.
