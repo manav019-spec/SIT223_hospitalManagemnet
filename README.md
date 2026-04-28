@@ -1,4 +1,4 @@
-# 🏥 Mahavir Mediscope Eye Centre
+# Mahavir Mediscope Eye Centre
 
 > A full-stack healthcare web application with a complete CI/CD pipeline  
 > built using Jenkins, Docker, SonarCloud, Prometheus and Grafana.
@@ -12,7 +12,7 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Project Overview](#-project-overview)
 - [Features](#-features)
@@ -29,7 +29,7 @@
 
 ---
 
-## 📖 Project Overview
+##  Project Overview
 
 Mahavir Mediscope Eye Centre is a full-stack healthcare web application  
 designed to digitize and streamline the operations of an eye care hospital.  
@@ -42,20 +42,20 @@ build, test, code quality, security, deployment, release, and monitoring.
 
 ---
 
-## ✨ Features
+## Features
 
 | Feature | Description |
 |--------|------------|
-| 🔐 Authentication | Firebase-based secure login and registration |
-| 📅 Appointment Booking | Patients can book appointments with doctors |
-| 👨‍⚕️ Doctor Dashboard | Doctors manage schedules and patient records |
-| 📹 Video Consultation | Jitsi-based integrated video conferencing |
-| 👤 Patient Profile | Personal health profile management |
-| 📊 Health Monitoring | Real-time backend health and metrics API |
+|  Authentication | Firebase-based secure login and registration |
+|  Appointment Booking | Patients can book appointments with doctors |
+|  Doctor Dashboard | Doctors manage schedules and patient records |
+|  Video Consultation | Jitsi-based integrated video conferencing |
+|  Patient Profile | Personal health profile management |
+|  Health Monitoring | Real-time backend health and metrics API |
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Application
 
@@ -86,42 +86,7 @@ build, test, code quality, security, deployment, release, and monitoring.
 
 ---
 
-## 📁 Project Structure
-
-
-SIT223_hospitalManagemnet/
-│
-├── Frontend/ # React.js application
-│ ├── src/
-│ │ └── App/
-│ │ └── components/
-│ │ ├── DoctorDashboard/
-│ │ ├── PatientAppointments/
-│ │ ├── VideoConference/
-│ │ ├── Profile/
-│ │ └── Services/
-│ ├── Dockerfile # Multi-stage Docker build
-│ └── package.json
-│
-├── Backend/ # Node.js Express API
-│ ├── server.js # Main server file
-│ ├── test/
-│ │ └── server.test.js # Jest test suite
-│ ├── Dockerfile # Backend Docker build
-│ └── package.json
-│
-├── docker-compose.yml
-├── docker-compose.monitoring.yml
-├── prometheus.yml
-├── alerts.yml
-├── Jenkinsfile
-├── sonar-project.properties
-└── README.md
-
-
----
-
-## 🔄 CI/CD Pipeline
+##  CI/CD Pipeline
 
 The entire pipeline is defined as code in the `Jenkinsfile` and runs on every push to the `main` branch.
 
@@ -134,7 +99,7 @@ Checkout → Build → Test → Code Quality → Security → Deploy → Verify 
 
 ---
 
-## 📊 Pipeline Stages
+## Pipeline Stages
 
 ### 1. Checkout
 Pulls the latest code from the `main` branch using Jenkins Git credentials.
@@ -151,7 +116,7 @@ Pulls the latest code from the `main` branch using Jenkins Git credentials.
 - Endpoints tested:
   - `GET /health` → HTTP 200
   - `GET /api/test` → `{ success: true }`
-- ✅ **Result:** 2/2 tests passing
+-  **Result:** 2/2 tests passing
 
 ### 4. Code Quality
 - ESLint checks
@@ -159,7 +124,7 @@ Pulls the latest code from the `main` branch using Jenkins Git credentials.
 - **Result:** Security Rating A, 240 issues identified
 
 ### 5. Security Scan
-- Backend: 0 vulnerabilities ✅
+- Backend: 0 vulnerabilities 
 - Frontend: 48 vulnerabilities
 
 ### 6. Deploy
@@ -185,7 +150,7 @@ curl -f http://localhost:5000/health
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -199,12 +164,14 @@ curl -f http://localhost:5000/health
 ```bash
 git clone https://github.com/manav019-spec/SIT223_hospitalManagemnet.git
 cd SIT223_hospitalManagemnet
+
 ▶️ Running the Application
 Run with Docker
 docker-compose up -d --build
 docker-compose -f docker-compose.monitoring.yml up -d
 Access
-Service	URL
+
+**Service	URL**
 Frontend	http://localhost
 
 Backend	http://localhost:5000
@@ -216,31 +183,37 @@ Metrics	http://localhost:5000/metrics
 Prometheus	http://localhost:9090
 
 Grafana	http://localhost:3000
-Run Tests
+
+**Run Tests**
 cd Backend
 npm install
 npm test
-📈 Monitoring
-Prometheus Alerts
-Alert	Severity	Condition	Description
-BackendDown	Critical	up == 0	Backend unreachable
-HighResponseTime	Warning	>500ms	Performance issue
-Grafana Login
-Username: admin
-Password: admin
-🔒 Security Findings
+
+ **Monitoring**
+-Prometheus Alerts
+-Alert	Severity	Condition	Description
+-BackendDown	Critical	up == 0	Backend unreachable
+-HighResponseTime	Warning	>500ms	Performance issue
+-Grafana Login
+---Username: admin
+---Password: admin
+
+**Security Findings**
 Package	Severity	Issue	Status
 react-router-dom <=6.30.2	HIGH	XSS redirect	Update required
 lodash <=4.17.23	HIGH	Prototype pollution	Update required
 follow-redirects <=1.15.11	MODERATE	Header leak	Update required
 node-forge <=1.3.3	HIGH	Signature forgery	Update required
 react-scripts	CRITICAL	Dev dependency	Acceptable
-📧 Email Notifications
+
+**Email Notifications**
 ✅ After Test stage
 ✅ After Security Scan
 ✅ On SUCCESS
 ❌ On FAILURE
-👨‍💻 Author
+```
+ ---
+### Author
 
 Manav Jain
 
@@ -248,6 +221,6 @@ GitHub: https://github.com/manav019-spec
 Email: manav4830.se24@chitkara.edu.in
 University: Chitkara University
 Unit: SIT223 — Professional Practice in IT
-📄 License
 
+### License
 This project is created for academic purposes as part of SIT223 at Deakin University.
